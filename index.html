@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>John & Esther's Wedding Invitation</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Serif+TC:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cedar: {
+                            50: '#f9f8f3',
+                            100: '#f2efde',
+                            200: '#e1d9bd',
+                            700: '#6a5141',
+                            800: '#4a372b',
+                            900: '#32241b',
+                        },
+                        ivory: '#f2efde',
+                        oatmeal: '#E5D9C5',
+                        sunkissed: '#F4E3B2',
+                        walnut: '#6B4426'
+                    },
+                    fontFamily: {
+                        serif: ['"Cormorant Garamond"', '"Noto Serif TC"', 'serif'],
+                        sans: ['"Noto Serif TC"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #f2efde;
+            color: #4a372b;
+            font-family: 'Noto Serif TC', serif;
+        }
+
+        .font-cormorant {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* 毛玻璃效果 */
+        .glass-nav {
+            background: rgba(242, 239, 222, 0.82);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(74, 55, 43, 0.1);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 10px 30px -5px rgba(74, 55, 43, 0.08), 0 4px 6px -2px rgba(74, 55, 43, 0.04);
+        }
+
+        .glass-card-hover {
+            transition: all 0.3s ease;
+        }
+        .glass-card-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px -5px rgba(74, 55, 43, 0.12);
+        }
+
+        /* 倒數計時器獨立白色微光卡片 */
+        .timer-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(74, 55, 43, 0.08), 0 2px 4px rgba(74, 55, 43, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* 微妙分割線 */
+        .divider-vertical {
+            width: 1px;
+            height: 60%;
+            background: linear-gradient(to bottom, transparent, rgba(74, 55, 43, 0.25), transparent);
+        }
+
+        /* 動態顯示過渡 */
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .collapsible-content.expanded {
+            max-height: 500px;
+            opacity: 1;
+        }
+
+        /* 隱藏原生滾動條但保持功能 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+    <!-- 預先宣告全域 submitted 變數，防止 iframe onload 早期觸發時產生 ReferenceError -->
+    <script>
+        window.submitted = false;
+    </script>
+</head>
+<body class="antialiased selection:bg-cedar-800 selection:text-ivory">
+
+    <!-- 1. 固定毛玻璃導航列 -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300">
+        <div class="max-w-5xl mx-auto px-6 h-20 flex items-center justify-between">
+            <!-- 標誌 Logo -->
+            <a href="#" class="font-cormorant text-2xl font-bold tracking-widest text-cedar-800">
+                J <span class="text-xs italic font-normal">&</span> E
+            </a>
+
+            <!-- 桌面版選單 -->
+            <div class="hidden md:flex space-x-8 text-sm font-medium tracking-wider">
+                <a href="#details" class="hover:text-amber-800 transition-colors py-1">婚禮詳情 <span class="text-xs block font-cormorant text-cedar-700 opacity-70">DETAILS</span></a>
+                <a href="#transport" class="hover:text-amber-800 transition-colors py-1">交通指引 <span class="text-xs block font-cormorant text-cedar-700 opacity-70">LOCATION</span></a>
+                <a href="#rsvp" class="hover:text-amber-800 transition-colors py-1">出席回覆 <span class="text-xs block font-cormorant text-cedar-700 opacity-70">RSVP</span></a>
+            </div>
+
+            <!-- 手機版選單按鈕 -->
+            <button id="mobile-menu-btn" class="md:hidden text-cedar-800 focus:outline-none p-2" aria-label="Toggle Menu">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+
+        <!-- 手機版下拉選單 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-ivory/95 border-b border-cedar-800/10 px-6 py-4 space-y-3">
+            <a href="#details" class="block text-cedar-800 font-medium py-1">婚禮詳情 DETAILS</a>
+            <a href="#transport" class="block text-cedar-800 font-medium py-1">交通指引 LOCATION</a>
+            <a href="#rsvp" class="block text-cedar-800 font-medium py-1">出席回覆 RSVP</a>
+        </div>
+    </nav>
+
+    <!-- 3. 首頁全螢幕封面背景 -->
+    <header class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        <!-- 背景圖與漸層罩衫 -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://i.postimg.cc/nrcKDLCt/S-119947382.jpg" alt="John and Esther Wedding" class="w-full h-full object-cover object-center filter brightness-[0.9] contrast-[0.95]">
+            <div class="absolute inset-0 bg-gradient-to-t from-cedar-900/60 via-cedar-900/20 to-cedar-900/40"></div>
+        </div>
+
+        <!-- 封面主內容 -->
+        <div class="relative z-10 text-center text-white px-6 max-w-3xl mx-auto flex flex-col items-center">
+            <p class="font-cormorant italic text-lg sm:text-2xl tracking-widest mb-3 opacity-90">Save the Date</p>
+            <h1 class="font-cormorant text-5xl sm:text-7xl md:text-8xl font-normal tracking-wide mb-2 drop-shadow-md">
+                John <span class="font-light italic text-4xl sm:text-6xl">&</span> Esther
+            </h1>
+            <p class="text-sm sm:text-base tracking-widest font-light mb-8 opacity-90">陳信翰 & 邱潔心</p>
+
+            <div class="w-12 h-[1px] bg-white/60 mb-8"></div>
+
+            <p class="font-cormorant italic text-base sm:text-xl font-light max-w-lg mb-8 tracking-wide leading-relaxed drop-shadow">
+                “God wrote our story, and love will lead us through.” ♡
+            </p>
+
+            <div class="inline-block px-6 py-2 border border-white/40 backdrop-blur-sm rounded-full text-xs sm:text-sm tracking-widest uppercase">
+                2027 . 04 . 03 — KAOHSIUNG
+            </div>
+
+            <!-- 向下滑動指標 -->
+            <a href="#details" class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-white/80 hover:text-white transition-colors">
+                <i class="fa-solid fa-chevron-down text-lg"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- 2. 計時器視覺 (獨立白色微光卡片倒數) -->
+    <section class="py-16 px-4 bg-cedar-50/50">
+        <div class="max-w-4xl mx-auto text-center">
+            <h3 class="font-cormorant text-2xl sm:text-3xl font-semibold tracking-wider text-cedar-800 mb-2">COUNTDOWN</h3>
+            <p class="text-xs sm:text-sm text-cedar-700 tracking-widest mb-10">距離婚禮開始還剩</p>
+
+            <!-- 倒數計時器容器 -->
+            <div class="flex items-center justify-center space-x-2 sm:space-x-4 max-w-2xl mx-auto">
+                <!-- 天 -->
+                <div class="timer-card flex-1 py-4 px-2 sm:py-6 sm:px-4 text-center">
+                    <span id="days" class="font-cormorant text-3xl sm:text-5xl font-bold text-cedar-800 block">00</span>
+                    <span class="text-[10px] sm:text-xs tracking-widest text-cedar-700 uppercase mt-1 block">Days / 天</span>
+                </div>
+
+                <div class="divider-vertical"></div>
+
+                <!-- 小時 -->
+                <div class="timer-card flex-1 py-4 px-2 sm:py-6 sm:px-4 text-center">
+                    <span id="hours" class="font-cormorant text-3xl sm:text-5xl font-bold text-cedar-800 block">00</span>
+                    <span class="text-[10px] sm:text-xs tracking-widest text-cedar-700 uppercase mt-1 block">Hours / 時</span>
+                </div>
+
+                <div class="divider-vertical"></div>
+
+                <!-- 分鐘 -->
+                <div class="timer-card flex-1 py-4 px-2 sm:py-6 sm:px-4 text-center">
+                    <span id="minutes" class="font-cormorant text-3xl sm:text-5xl font-bold text-cedar-800 block">00</span>
+                    <span class="text-[10px] sm:text-xs tracking-widest text-cedar-700 uppercase mt-1 block">Mins / 分</span>
+                </div>
+
+                <div class="divider-vertical"></div>
+
+                <!-- 秒 -->
+                <div class="timer-card flex-1 py-4 px-2 sm:py-6 sm:px-4 text-center">
+                    <span id="seconds" class="font-cormorant text-3xl sm:text-5xl font-bold text-cedar-800 block">00</span>
+                    <span class="text-[10px] sm:text-xs tracking-widest text-cedar-700 uppercase mt-1 block">Secs / 秒</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 婚禮詳情 & Dress Code -->
+    <section id="details" class="py-20 px-6 bg-white/40 border-y border-cedar-800/5">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="font-cormorant text-sm tracking-widest text-cedar-700 uppercase block mb-1">Wedding Information</span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-cedar-800 tracking-wider">婚禮詳情</h2>
+                <div class="w-8 h-[2px] bg-cedar-800/20 mx-auto mt-3"></div>
+            </div>
+
+            <!-- 時間與地點網格 -->
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <!-- 時間資訊 -->
+                <div class="glass-card rounded-2xl p-8 text-center space-y-4 border border-white">
+                    <div class="w-12 h-12 rounded-full bg-cedar-100 flex items-center justify-center mx-auto text-cedar-800">
+                        <i class="fa-regular fa-clock text-xl"></i>
+                    </div>
+                    <h4 class="font-cormorant text-xl font-bold text-cedar-800">TIME</h4>
+                    <div class="text-sm space-y-2 text-cedar-800">
+                        <p class="font-semibold">2027年4月3日 星期六</p>
+                        <div class="pt-2 border-t border-cedar-800/10 space-y-1">
+                            <p><span class="text-cedar-700">婚禮觀禮：</span><span class="whitespace-nowrap font-medium">10:00 入席</span> / <span class="whitespace-nowrap font-medium">10:30 開始</span></p>
+                            <p><span class="text-cedar-700">會後茶點：</span><span class="whitespace-nowrap font-medium">12:30 可入席享用</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 地點資訊 (包含手機防斷行控制) -->
+                <div class="glass-card rounded-2xl p-8 text-center space-y-4 border border-white">
+                    <div class="w-12 h-12 rounded-full bg-cedar-100 flex items-center justify-center mx-auto text-cedar-800">
+                        <i class="fa-solid fa-location-dot text-xl"></i>
+                    </div>
+                    <h4 class="font-cormorant text-xl font-bold text-cedar-800">LOCATION</h4>
+                    <div class="text-sm space-y-2 text-cedar-800">
+                        <p class="font-semibold whitespace-nowrap">高雄靈糧堂 4F尊貴廳</p>
+                        <p class="text-xs text-cedar-700 whitespace-nowrap">高雄市左營區文川路157號</p>
+                        <div class="pt-3">
+                            <a href="https://maps.google.com/?q=高雄市左營區文川路157號" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-2 text-xs bg-cedar-800 text-ivory px-4 py-2 rounded-full hover:bg-cedar-700 transition-colors">
+                                <i class="fa-solid fa-map-pin"></i>
+                                <span>開啟 Google 地圖</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dress Code 資訊區塊 -->
+            <div class="glass-card rounded-2xl p-8 text-center border border-white">
+                <h4 class="font-cormorant text-xl font-bold text-cedar-800 mb-2">DRESS CODE</h4>
+                <p class="text-xs text-cedar-700 mb-6">誠摯邀請您穿著以下著裝色調，與我們一同留下優雅溫馨的影像記憶</p>
+                
+                <div class="flex flex-wrap justify-center items-center gap-6 sm:gap-10">
+                    <!-- 色塊 1 -->
+                    <div class="flex flex-col items-center space-y-2">
+                        <div class="w-14 h-14 rounded-full shadow-md border-2 border-white bg-[#E5D9C5] transition-transform hover:scale-105"></div>
+                        <span class="text-xs font-medium text-cedar-800">燕麥奶茶</span>
+                        <span class="text-[10px] text-cedar-700 font-cormorant">Oatmeal</span>
+                    </div>
+
+                    <!-- 色塊 2 -->
+                    <div class="flex flex-col items-center space-y-2">
+                        <div class="w-14 h-14 rounded-full shadow-md border-2 border-white bg-[#C8C0B5] transition-transform hover:scale-105"></div>
+                        <span class="text-xs font-medium text-cedar-800">象牙灰</span>
+                        <span class="text-[10px] text-cedar-700 font-cormorant">Ivory Grey</span>
+                    </div>
+
+                    <!-- 色塊 3 -->
+                    <div class="flex flex-col items-center space-y-2">
+                        <div class="w-14 h-14 rounded-full shadow-md border-2 border-white bg-[#6B4426] transition-transform hover:scale-105"></div>
+                        <span class="text-xs font-medium text-cedar-800">胡桃木色</span>
+                        <span class="text-[10px] text-cedar-700 font-cormorant">Walnut</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6 & 7. 交通指引 (手風琴/摺疊面板 + no-wrap 防斷行) -->
+    <section id="transport" class="py-20 px-6">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="font-cormorant text-sm tracking-widest text-cedar-700 uppercase block mb-1">Transportation</span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-cedar-800 tracking-wider">交通指引</h2>
+                <p class="text-xs text-cedar-700 mt-2">點擊下方分類檢視詳細指引</p>
+                <div class="w-8 h-[2px] bg-cedar-800/20 mx-auto mt-3"></div>
+            </div>
+
+            <!-- Accordion 摺疊面板容器 -->
+            <div class="space-y-4">
+                <!-- 捷運指引 -->
+                <div class="glass-card rounded-xl border border-white overflow-hidden">
+                    <button class="accordion-header w-full px-6 py-5 text-left font-medium text-cedar-800 flex justify-between items-center focus:outline-none">
+                        <div class="flex items-center space-x-3">
+                            <i class="fa-solid fa-mrt text-cedar-800"></i>
+                            <span class="whitespace-nowrap">捷運大眾運輸</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-white/50 px-6">
+                        <div class="py-4 text-xs sm:text-sm text-cedar-800 space-y-2 border-t border-cedar-800/10">
+                            <p>搭乘高雄捷運紅線至 <span class="whitespace-nowrap font-semibold bg-cedar-100 px-1.5 py-0.5 rounded">生態園區站 2 號出口</span> 出站，步行約 <span class="whitespace-nowrap font-medium">10–15 分鐘</span> 即可抵達。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 高鐵/台鐵指引 -->
+                <div class="glass-card rounded-xl border border-white overflow-hidden">
+                    <button class="accordion-header w-full px-6 py-5 text-left font-medium text-cedar-800 flex justify-between items-center focus:outline-none">
+                        <div class="flex items-center space-x-3">
+                            <i class="fa-solid fa-train text-cedar-800"></i>
+                            <span class="whitespace-nowrap">高鐵 / 台鐵指引</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-white/50 px-6">
+                        <div class="py-4 text-xs sm:text-sm text-cedar-800 space-y-2 border-t border-cedar-800/10">
+                            <p>搭乘至 <span class="whitespace-nowrap font-semibold bg-cedar-100 px-1.5 py-0.5 rounded">新左營站</span> 下車，出站後步行約 <span class="whitespace-nowrap font-medium">11–15 分鐘</span> 即可抵達。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 汽車停車指引 -->
+                <div class="glass-card rounded-xl border border-white overflow-hidden">
+                    <button class="accordion-header w-full px-6 py-5 text-left font-medium text-cedar-800 flex justify-between items-center focus:outline-none">
+                        <div class="flex items-center space-x-3">
+                            <i class="fa-solid fa-car text-cedar-800"></i>
+                            <span class="whitespace-nowrap">汽車停車資訊</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-white/50 px-6">
+                        <div class="py-4 text-xs sm:text-sm text-cedar-800 space-y-2 border-t border-cedar-800/10 leading-relaxed">
+                            <p>教會設有汽車停車場，入口位於 <span class="whitespace-nowrap font-semibold bg-cedar-100 px-1.5 py-0.5 rounded">大中二路</span>。</p>
+                            <p class="text-xs text-cedar-700 italic">* 停車位有限，請依現場工作人員指引停放；若車位已滿，可利用教會周邊收費停車場。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 機車停車指引 -->
+                <div class="glass-card rounded-xl border border-white overflow-hidden">
+                    <button class="accordion-header w-full px-6 py-5 text-left font-medium text-cedar-800 flex justify-between items-center focus:outline-none">
+                        <div class="flex items-center space-x-3">
+                            <i class="fa-solid fa-motorcycle text-cedar-800"></i>
+                            <span class="whitespace-nowrap">機車停車資訊</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-white/50 px-6">
+                        <div class="py-4 text-xs sm:text-sm text-cedar-800 border-t border-cedar-800/10">
+                            <p>教會設有機車停車空間，騎車前來的親友請依現場標示及工作人員指引停放。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4, 5, 8. 智能表單與隱藏 Iframe 提交 -->
+    <section id="rsvp" class="py-20 px-6 bg-white/40 border-t border-cedar-800/5">
+        <div class="max-w-2xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="font-cormorant text-sm tracking-widest text-cedar-700 uppercase block mb-1">R.S.V.P</span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-cedar-800 tracking-wider">出席回覆</h2>
+                <p class="text-xs text-cedar-700 mt-2">請於 2027 年 3 月 1 日前填寫回覆，方便我們安排座位</p>
+                <div class="w-8 h-[2px] bg-cedar-800/20 mx-auto mt-3"></div>
+            </div>
+
+            <!-- 隱藏式 Iframe (技術要求 5) -->
+            <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted) { showSuccessMessage(); }"></iframe>
+
+            <!-- 表單 (使用 Form Google Direct Submit 結構) -->
+            <form id="rsvp-form" action="https://docs.google.com/forms/d/e/1FAIpQLSdbjMs6EkE7_DWXu2IlAoFg_OnZJ6ElcRk0QpaoQlE4IZsr8A/formResponse" method="POST" target="hidden_iframe" class="glass-card rounded-2xl p-6 sm:p-10 border border-white space-y-6">
+
+                <!-- 欄位：姓名 -->
+                <div>
+                    <label class="block text-xs font-bold text-cedar-800 uppercase tracking-wider mb-2">
+                        姓名 <span class="font-cormorant text-cedar-700">NAME</span> <span class="text-rose-600">*</span>
+                    </label>
+                    <input type="text" name="entry.950620667" required placeholder="請輸入您的姓名" class="w-full px-4 py-3 rounded-xl border border-cedar-800/20 bg-white/70 focus:outline-none focus:ring-2 focus:ring-cedar-800/40 text-sm">
+                </div>
+
+                <!-- 欄位：電話 -->
+                <div>
+                    <label class="block text-xs font-bold text-cedar-800 uppercase tracking-wider mb-2">
+                        電話 <span class="font-cormorant text-cedar-700">PHONE</span> <span class="text-rose-600">*</span>
+                    </label>
+                    <input type="tel" name="entry.1074117230" required placeholder="請輸入您的聯絡電話" class="w-full px-4 py-3 rounded-xl border border-cedar-800/20 bg-white/70 focus:outline-none focus:ring-2 focus:ring-cedar-800/40 text-sm">
+                </div>
+
+                <!-- 欄位：親友關係 (下拉選單保持純中文) -->
+                <div>
+                    <label class="block text-xs font-bold text-cedar-800 uppercase tracking-wider mb-2">
+                        親友關係 <span class="font-cormorant text-cedar-700">RELATIONSHIP</span> <span class="text-rose-600">*</span>
+                    </label>
+                    <select name="entry.1226142837" required class="w-full px-4 py-3 rounded-xl border border-cedar-800/20 bg-white/70 focus:outline-none focus:ring-2 focus:ring-cedar-800/40 text-sm text-cedar-800">
+                        <option value="" disabled selected>請選擇關係</option>
+                        <option value="新郎親友">新郎親友</option>
+                        <option value="新娘親友">新娘親友</option>
+                        <option value="共同好友">共同好友</option>
+                    </select>
+                </div>
+
+                <!-- 欄位：出席意願 (8. 智能邏輯觸發) -->
+                <div>
+                    <label class="block text-xs font-bold text-cedar-800 uppercase tracking-wider mb-2">
+                        當天是否能前來參加婚禮觀禮？ <span class="font-cormorant text-cedar-700">ATTENDANCE</span> <span class="text-rose-600">*</span>
+                    </label>
+                    <select id="attendance-select" name="entry.1571389830" required class="w-full px-4 py-3 rounded-xl border border-cedar-800/20 bg-white/70 focus:outline-none focus:ring-2 focus:ring-cedar-800/40 text-sm text-cedar-800">
+                        <option value="" disabled selected>請選擇出席狀態</option>
+                        <option value="熱情出席（請繼續填寫下方出席人數）">熱情出席（請繼續填寫下方出席人數）</option>
+                        <option value="遺憾無法出席（獻上誠摯祝福）">遺憾無法出席（獻上誠摯祝福）</option>
+                    </select>
+                </div>
+
+                <!-- 8. 動態條件式人數區塊 (條件展開) -->
+                <div id="attendance-details" class="collapsible-content space-y-6">
+                    <!-- 觀禮總人數 -->
+                    <div class="pt-2 border-t border-cedar-800/10">
+                        <label class="block text-xs font-bold text-cedar-800 uppercase tracking-wider mb-2">
+                            婚禮觀禮出席總人數 <span class="font-cormorant text-cedar-700">GUESTS COUNT</span>
+                        </label>
+                        <select name="entry.1642704597" class="w-full px-4 py-3 rounded-xl border border-cedar-800/20 bg-white/70 focus:outline-none focus:ring-2 focus:ring-cedar-800/40 text-sm text-cedar-800">
+                            <option value="1 位">1 位</option>
+                            <option value="2 位">2 位</option>
+                            <option value="3 位">3 位</option>
+                            <option value="4 位">4 位</option>
+                            <option value="5 位以上">5 位以上</option>
+                        </select>
+                    </div>
+
+                    <!-- 茶點人數 -->
+                    <div>
+                        <label class="block text-xs font-bold text-cedar-800 uppercase tracking-wider mb-2">
+                            會後茶點參加人數 <span class="font-cormorant text-cedar-700">REFRESHMENTS COUNT</span>
+                        </label>
+                        <select name="entry.197118775" class="w-full px-4 py-3 rounded-xl border border-cedar-800/20 bg-white/70 focus:outline-none focus:ring-2 focus:ring-cedar-800/40 text-sm text-cedar-800">
+                            <option value="0 位">0 位 (不參加茶點)</option>
+                            <option value="1 位">1 位</option>
+                            <option value="2 位">2 位</option>
+                            <option value="3 位">3 位</option>
+                            <option value="4 位">4 位</option>
+                            <option value="5 位以上">5 位以上</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 欄位：祝福話語 -->
+                <div>
+                    <label class="block text-xs font-bold text-cedar-800 uppercase tracking-wider mb-2">
+                        給新人的祝福話語 <span class="font-cormorant text-cedar-700">MESSAGE</span>
+                    </label>
+                    <textarea name="entry.1971246890" rows="3" placeholder="留下您對信翰與潔心的美好祝福..." class="w-full px-4 py-3 rounded-xl border border-cedar-800/20 bg-white/70 focus:outline-none focus:ring-2 focus:ring-cedar-800/40 text-sm"></textarea>
+                </div>
+
+                <!-- 提交按鈕 -->
+                <button type="submit" class="w-full py-4 bg-cedar-800 text-ivory rounded-xl text-sm font-semibold tracking-widest hover:bg-cedar-700 active:scale-[0.99] transition-all shadow-md">
+                    確認送出回覆 / SUBMIT
+                </button>
+            </form>
+
+            <!-- 成功送出提示訊息 modal/box -->
+            <div id="success-modal" class="hidden glass-card rounded-2xl p-8 text-center border border-white space-y-4">
+                <div class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto text-2xl">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h3 class="text-xl font-bold text-cedar-800">回覆已順利送出！</h3>
+                <p class="text-sm text-cedar-700 leading-relaxed">
+                    感謝您的回覆與祝福，我們非常期待在 2027 年 4 月 3 日與您相見！
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 頁尾 Footer -->
+    <footer class="py-12 px-6 text-center text-xs text-cedar-700 border-t border-cedar-800/10">
+        <p class="font-cormorant text-base italic mb-2">John & Esther Wedding</p>
+        <p>God wrote our story, and love will lead us through. ♡</p>
+    </footer>
+
+    <!-- JavaScript 邏輯處理 -->
+    <script>
+        // --- 1. 手機版導覽列開關 ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 點擊選單項目後自動關閉手機選單
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // --- 2. 藝術感獨立卡片倒數計時器邏輯 (倒數至 2027/04/03 10:30) ---
+        const targetDate = new Date('2027-04-03T10:30:00+08:00').getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const difference = targetDate - now;
+
+            if (difference > 0) {
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                document.getElementById('days').innerText = String(days).padStart(2, '0');
+                document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+                document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
+            } else {
+                document.getElementById('days').innerText = '00';
+                document.getElementById('hours').innerText = '00';
+                document.getElementById('minutes').innerText = '00';
+                document.getElementById('seconds').innerText = '00';
+            }
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // --- 7. 交通指引摺疊面板 (Accordion) ---
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                const icon = header.querySelector('.fa-chevron-down');
+                
+                // 開啟/關閉切換
+                if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+                    content.style.maxHeight = '0px';
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    // 先關閉其他展開項
+                    document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = '0px');
+                    document.querySelectorAll('.accordion-header .fa-chevron-down').forEach(i => i.style.transform = 'rotate(0deg)');
+
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    icon.style.transform = 'rotate(180deg)';
+                }
+            });
+        });
+
+        // --- 8. 智能表單條件式動態顯示邏輯 ---
+        const attendanceSelect = document.getElementById('attendance-select');
+        const attendanceDetails = document.getElementById('attendance-details');
+
+        attendanceSelect.addEventListener('change', function() {
+            if (this.value === '熱情出席（請繼續填寫下方出席人數）') {
+                attendanceDetails.classList.add('expanded');
+            } else {
+                attendanceDetails.classList.remove('expanded');
+            }
+        });
+
+        // --- 5. 隱藏式 Iframe 提交回應處理 ---
+        const rsvpForm = document.getElementById('rsvp-form');
+
+        rsvpForm.addEventListener('submit', function() {
+            window.submitted = true;
+        });
+
+        function showSuccessMessage() {
+            rsvpForm.style.display = 'none';
+            document.getElementById('success-modal').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
